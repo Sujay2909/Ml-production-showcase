@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
-
 import pytest
 
-from src.nlp.entity_extractor import EntityExtractor, ExtractionResult
+from src.nlp.entity_extractor import EntityExtractor
 from src.nlp.preprocessor import TextPreprocessor
 
 # ---------------------------------------------------------------------------

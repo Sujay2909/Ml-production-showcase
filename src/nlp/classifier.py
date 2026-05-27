@@ -22,7 +22,6 @@ import torch.nn.functional as F
 from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
-    pipeline,
 )
 
 from src.logger import get_logger

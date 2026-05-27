@@ -7,15 +7,12 @@ and data drift signals — mirrors the Tableau dashboard KPIs.
 
 from __future__ import annotations
 
-import time
 from contextlib import contextmanager
-from typing import Dict, Optional
 
 from prometheus_client import (
     Counter,
     Gauge,
     Histogram,
-    Summary,
     start_http_server,
 )
 

@@ -12,12 +12,10 @@ reduce manual document annotation burden.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import List, Optional
 
-import spacy
-from spacy.language import Language
 from spacy.matcher import Matcher
-from spacy.tokens import Doc, Span
+from spacy.tokens import Doc
 
 from src.logger import get_logger
 

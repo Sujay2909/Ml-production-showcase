@@ -20,7 +20,6 @@ import mlflow.lightgbm
 import mlflow.sklearn
 import mlflow.xgboost
 import numpy as np
-import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
     f1_score,
@@ -28,7 +27,6 @@ from sklearn.metrics import (
     mean_squared_error,
     roc_auc_score,
 )
-from sklearn.model_selection import StratifiedKFold, cross_val_score
 
 from src.logger import get_logger
 from src.settings import get_settings
