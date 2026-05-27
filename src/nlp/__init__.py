@@ -1,7 +1,13 @@
-"""NLP package: document classification and entity extraction."""
+"""NLP package: document classification and entity extraction.
 
-from .classifier import DocumentClassifier
+Heavy dependencies (torch, transformers) are imported lazily inside
+each class so the package is importable without a GPU/ML environment.
+"""
+
 from .entity_extractor import EntityExtractor
 from .preprocessor import TextPreprocessor
 
-__all__ = ["TextPreprocessor", "DocumentClassifier", "EntityExtractor"]
+# DocumentClassifier is NOT imported here — it requires torch + transformers.
+# Import it directly when needed: from src.nlp.classifier import DocumentClassifier
+
+__all__ = ["TextPreprocessor", "EntityExtractor"]

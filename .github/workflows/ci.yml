@@ -60,7 +60,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install fakeredis fastapi httpx pytest pytest-cov scikit-learn \
+          pip install fakeredis fastapi httpx pytest pytest-cov joblib scikit-learn \
             xgboost lightgbm numpy pandas pydantic "pydantic-settings>=2.0" \
             structlog spacy redis
 
