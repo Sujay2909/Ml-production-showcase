@@ -11,7 +11,7 @@ import structlog
 
 def configure_logging(log_level: str | None = None) -> None:
     """Configure structlog for JSON output in prod, pretty output in dev."""
-    level = log_level or os.getenv("LOG_LEVEL", "INFO")
+    level: str = log_level or os.getenv("LOG_LEVEL", "INFO") or "INFO"
     app_env = os.getenv("APP_ENV", "development")
 
     logging.basicConfig(
@@ -22,7 +22,6 @@ def configure_logging(log_level: str | None = None) -> None:
 
     shared_processors: list = [
         structlog.contextvars.merge_contextvars,
-        structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),
@@ -39,7 +38,7 @@ def configure_logging(log_level: str | None = None) -> None:
             getattr(logging, level.upper(), logging.INFO)
         ),
         context_class=dict,
-        logger_factory=structlog.PrintLoggerFactory(),
+        logger_factory=structlog.stdlib.LoggerFactory(),
         cache_logger_on_first_use=True,
     )
 

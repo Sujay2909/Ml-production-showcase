@@ -9,7 +9,7 @@ a typed lookup so callers don't hard-code strings.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Any, Dict
+from typing import Any, Dict, Tuple, Union
 
 import lightgbm as lgb
 import xgboost as xgb
@@ -90,7 +90,11 @@ class ModelRegistry:
     """
 
     @staticmethod
-    def get(model_name: str, task: str = "classification", **override_kwargs):
+    def get(
+        model_name: str,
+        task: str = "classification",
+        **override_kwargs: Any,
+    ) -> Tuple[Any, Union[XGBoostConfig, LightGBMConfig, RandomForestConfig]]:
         """
         Parameters
         ----------
@@ -103,31 +107,31 @@ class ModelRegistry:
         """
         name = model_name.lower()
         if name == "xgboost":
-            cfg = XGBoostConfig(
+            xgb_cfg = XGBoostConfig(
                 **{k: v for k, v in override_kwargs.items() if hasattr(XGBoostConfig, k)}
             )
-            params = {k: v for k, v in asdict(cfg).items() if k != "early_stopping_rounds"}
+            params = {k: v for k, v in asdict(xgb_cfg).items() if k != "early_stopping_rounds"}
             if task == "classification":
-                return xgb.XGBClassifier(**params), cfg
-            return xgb.XGBRegressor(**params), cfg
+                return xgb.XGBClassifier(**params), xgb_cfg
+            return xgb.XGBRegressor(**params), xgb_cfg
 
         if name == "lightgbm":
-            cfg = LightGBMConfig(
+            lgbm_cfg = LightGBMConfig(
                 **{k: v for k, v in override_kwargs.items() if hasattr(LightGBMConfig, k)}
             )
-            params = {k: v for k, v in asdict(cfg).items() if k != "early_stopping_rounds"}
+            params = {k: v for k, v in asdict(lgbm_cfg).items() if k != "early_stopping_rounds"}
             if task == "classification":
-                return lgb.LGBMClassifier(**params), cfg
-            return lgb.LGBMRegressor(**params), cfg
+                return lgb.LGBMClassifier(**params), lgbm_cfg
+            return lgb.LGBMRegressor(**params), lgbm_cfg
 
         if name == "random_forest":
-            cfg = RandomForestConfig(
+            rf_cfg = RandomForestConfig(
                 **{k: v for k, v in override_kwargs.items() if hasattr(RandomForestConfig, k)}
             )
-            params = asdict(cfg)
+            params = asdict(rf_cfg)
             if task == "classification":
-                return RandomForestClassifier(**params), cfg
-            return RandomForestRegressor(**params), cfg
+                return RandomForestClassifier(**params), rf_cfg
+            return RandomForestRegressor(**params), rf_cfg
 
         raise ValueError(
             f"Unknown model '{model_name}'. Choose from: xgboost, lightgbm, random_forest"

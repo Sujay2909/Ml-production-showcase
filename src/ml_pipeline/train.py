@@ -123,11 +123,11 @@ class ModelTrainer:
 
             # Fit with eval set for early-stopping models
             if model_name in ("xgboost", "lightgbm"):
-                fit_kwargs = {
+                fit_kwargs: dict = {
                     "eval_set": [(X_val, y_val)],
                     "verbose": False,
                 }
-                if model_name == "xgboost":
+                if model_name == "xgboost" and hasattr(cfg, "early_stopping_rounds"):
                     fit_kwargs["early_stopping_rounds"] = cfg.early_stopping_rounds
                 model.fit(X_train, y_train, **fit_kwargs)
             else:
