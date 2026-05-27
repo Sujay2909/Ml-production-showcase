@@ -1,0 +1,90 @@
+version: "3.9"
+
+services:
+  # ── ML Platform API ──────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "8000:8000"
+      - "9090:9090"
+    environment:
+      APP_ENV: development
+      LOG_LEVEL: INFO
+      POSTGRES_HOST: postgres
+      REDIS_HOST: redis
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - ml-net
+
+  # ── PostgreSQL ───────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: mlplatform
+      POSTGRES_USER: mluser
+      POSTGRES_PASSWORD: changeme
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mluser -d mlplatform"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ml-net
+
+  # ── Redis ────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - ml-net
+
+  # ── MLflow Tracking Server ───────────────────────────────────────────────
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.8.0
+    ports:
+      - "5000:5000"
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://mluser:changeme@postgres/mlplatform
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+      --port 5000
+    volumes:
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ml-net
+
+volumes:
+  pgdata:
+  mlflow_artifacts:
+
+networks:
+  ml-net:
+    driver: bridge

@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+test-results.xml
+
+# ML artefacts
+models/
+*.joblib
+*.pkl
+*.pt
+*.bin
+
+# Data (keep structure, not data)
+data/delta/
+data/checkpoints/
+data/raw/
+data/processed/
+!data/samples/.gitkeep
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Spark
+derby.log
+metastore_db/
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Docker
+.dockerignore

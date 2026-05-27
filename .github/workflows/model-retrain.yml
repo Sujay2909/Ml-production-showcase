@@ -1,0 +1,58 @@
+name: Scheduled Model Retraining
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"   # Every Monday at 02:00 UTC
+  workflow_dispatch:        # Allow manual trigger
+    inputs:
+      model_name:
+        description: "Model to retrain (xgboost | lightgbm | random_forest | all)"
+        required: false
+        default: "all"
+
+env:
+  PYTHON_VERSION: "3.11"
+  MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+
+jobs:
+  retrain:
+    name: Retrain & Register Models
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Configure MLflow credentials
+        run: |
+          echo "MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}" >> $GITHUB_ENV
+          echo "MLFLOW_EXPERIMENT_NAME=ml-platform-scheduled" >> $GITHUB_ENV
+
+      - name: Run retraining pipeline
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          python -m src.ml_pipeline.train \
+            --model "${{ github.event.inputs.model_name || 'all' }}" \
+            --task classification
+
+      - name: Run model validation
+        run: python -m pytest tests/test_ml_pipeline.py -v --tb=short
+
+      - name: Notify on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: "⚠️ Model retraining failed on branch ${{ github.ref }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
