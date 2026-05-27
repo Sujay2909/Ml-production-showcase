@@ -253,6 +253,8 @@ def create_app(
 # Entrypoint
 # ---------------------------------------------------------------------------
 
+# Module-level app instance used by uvicorn / gunicorn.
+# RedisCache now connects lazily so this is safe to import without Redis running.
 app = create_app()
 
 if __name__ == "__main__":

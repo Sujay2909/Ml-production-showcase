@@ -55,7 +55,7 @@ class RedisCache:
                 socket_connect_timeout=2,
                 socket_timeout=2,
             )
-            self._ping()
+        # Connection verified lazily on first use
 
     def _ping(self) -> None:
         try:
