@@ -5,6 +5,7 @@ Loads a trained model artifact and feature pipeline, then
 exposes a consistent predict() interface used by the FastAPI
 serving layer and batch scoring jobs alike.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -15,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 from src.logger import get_logger
+
 from .features import FeatureEngineer
 
 logger = get_logger(__name__)
@@ -80,9 +82,7 @@ class ModelPredictor:
         preds = self.model.predict(X)
         result: Dict[str, Any] = {"predictions": preds.tolist()}
 
-        if self.task == "classification" and return_proba and hasattr(
-            self.model, "predict_proba"
-        ):
+        if self.task == "classification" and return_proba and hasattr(self.model, "predict_proba"):
             probas = self.model.predict_proba(X)
             result["probabilities"] = probas.tolist()
             result["churn_probability"] = probas[:, 1].tolist()

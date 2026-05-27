@@ -8,6 +8,7 @@ Extracts key entities from compliance and legal documents:
 Used to power downstream structured data extraction and
 reduce manual document annotation burden.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -19,6 +20,7 @@ from spacy.matcher import Matcher
 from spacy.tokens import Doc, Span
 
 from src.logger import get_logger
+
 from .preprocessor import TextPreprocessor
 
 logger = get_logger(__name__)
@@ -37,7 +39,7 @@ class ExtractedEntity:
 class ExtractionResult:
     doc_id: str
     entities: List[ExtractedEntity] = field(default_factory=list)
-    obligations: List[str] = field(default_factory=list)    # "shall", "must" sentences
+    obligations: List[str] = field(default_factory=list)  # "shall", "must" sentences
     dates: List[str] = field(default_factory=list)
     monetary_values: List[str] = field(default_factory=list)
     parties: List[str] = field(default_factory=list)
@@ -50,10 +52,7 @@ class ExtractionResult:
         return {
             "doc_id": self.doc_id,
             "entity_count": self.entity_count,
-            "entities": [
-                {"text": e.text, "label": e.label}
-                for e in self.entities
-            ],
+            "entities": [{"text": e.text, "label": e.label} for e in self.entities],
             "obligations": self.obligations,
             "dates": self.dates,
             "monetary_values": self.monetary_values,

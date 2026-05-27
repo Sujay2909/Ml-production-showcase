@@ -11,6 +11,7 @@ Architecture
 - Batched inference for throughput at scale
 - Confidence threshold filtering to surface low-certainty docs for human review
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -26,6 +27,7 @@ from transformers import (
 
 from src.logger import get_logger
 from src.settings import get_settings
+
 from .preprocessor import TextPreprocessor
 
 logger = get_logger(__name__)
@@ -115,9 +117,7 @@ class DocumentClassifier:
         results = self._infer([truncated])
         return results[0]
 
-    def classify_batch(
-        self, texts: List[str], batch_size: int = 32
-    ) -> List[ClassificationResult]:
+    def classify_batch(self, texts: List[str], batch_size: int = 32) -> List[ClassificationResult]:
         """
         Classify a list of documents in mini-batches.
         Saves ~400 analyst-hours/month on compliance document triage.

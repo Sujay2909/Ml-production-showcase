@@ -1,13 +1,13 @@
 """Unit tests for NLP module: preprocessor, classifier, entity extractor."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.nlp.preprocessor import TextPreprocessor
 from src.nlp.entity_extractor import EntityExtractor, ExtractionResult
-
+from src.nlp.preprocessor import TextPreprocessor
 
 # ---------------------------------------------------------------------------
 # TextPreprocessor

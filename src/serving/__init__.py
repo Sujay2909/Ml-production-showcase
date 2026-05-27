@@ -1,4 +1,5 @@
 """Serving package: FastAPI application and Redis caching layer."""
+
 from .api import create_app
 from .cache import RedisCache
 

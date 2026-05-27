@@ -4,6 +4,7 @@ Delta Lake writer with merge (upsert), append, and overwrite modes.
 Handles schema evolution and provides VACUUM + OPTIMIZE helpers
 to keep Delta tables healthy in production.
 """
+
 from __future__ import annotations
 
 from enum import Enum
@@ -14,6 +15,7 @@ from pyspark.sql import DataFrame, SparkSession
 
 from src.logger import get_logger
 from src.settings import get_settings
+
 from .spark_session import get_spark
 
 logger = get_logger(__name__)
@@ -57,9 +59,7 @@ class DeltaWriter:
                 raise ValueError("merge_keys required for MERGE mode")
             self._merge(df, path, merge_keys)
         else:
-            writer = df.write.format("delta").mode(mode.value).option(
-                "mergeSchema", "true"
-            )
+            writer = df.write.format("delta").mode(mode.value).option("mergeSchema", "true")
             if partition_columns:
                 writer = writer.partitionBy(*partition_columns)
             writer.save(path)
@@ -67,13 +67,9 @@ class DeltaWriter:
         count = df.count()
         logger.info("delta_write_complete", table=table_name, rows_written=count)
 
-    def _merge(
-        self, df: DataFrame, path: str, merge_keys: List[str]
-    ) -> None:
+    def _merge(self, df: DataFrame, path: str, merge_keys: List[str]) -> None:
         """MERGE (upsert): update matching rows, insert new ones."""
-        condition = " AND ".join(
-            [f"target.{k} = source.{k}" for k in merge_keys]
-        )
+        condition = " AND ".join([f"target.{k} = source.{k}" for k in merge_keys])
         if DeltaTable.isDeltaTable(self.spark, path):
             target = DeltaTable.forPath(self.spark, path)
             (

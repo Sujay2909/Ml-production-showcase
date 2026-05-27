@@ -5,6 +5,7 @@ Each model config is a dataclass that carries hyperparameters and
 can be serialised to MLflow params.  A ModelRegistry class provides
 a typed lookup so callers don't hard-code strings.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -13,7 +14,6 @@ from typing import Any, Dict
 import lightgbm as lgb
 import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-
 
 # ---------------------------------------------------------------------------
 # Hyperparameter dataclasses
@@ -103,21 +103,27 @@ class ModelRegistry:
         """
         name = model_name.lower()
         if name == "xgboost":
-            cfg = XGBoostConfig(**{k: v for k, v in override_kwargs.items() if hasattr(XGBoostConfig, k)})
+            cfg = XGBoostConfig(
+                **{k: v for k, v in override_kwargs.items() if hasattr(XGBoostConfig, k)}
+            )
             params = {k: v for k, v in asdict(cfg).items() if k != "early_stopping_rounds"}
             if task == "classification":
                 return xgb.XGBClassifier(**params), cfg
             return xgb.XGBRegressor(**params), cfg
 
         if name == "lightgbm":
-            cfg = LightGBMConfig(**{k: v for k, v in override_kwargs.items() if hasattr(LightGBMConfig, k)})
+            cfg = LightGBMConfig(
+                **{k: v for k, v in override_kwargs.items() if hasattr(LightGBMConfig, k)}
+            )
             params = {k: v for k, v in asdict(cfg).items() if k != "early_stopping_rounds"}
             if task == "classification":
                 return lgb.LGBMClassifier(**params), cfg
             return lgb.LGBMRegressor(**params), cfg
 
         if name == "random_forest":
-            cfg = RandomForestConfig(**{k: v for k, v in override_kwargs.items() if hasattr(RandomForestConfig, k)})
+            cfg = RandomForestConfig(
+                **{k: v for k, v in override_kwargs.items() if hasattr(RandomForestConfig, k)}
+            )
             params = asdict(cfg)
             if task == "classification":
                 return RandomForestClassifier(**params), cfg

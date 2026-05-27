@@ -1,4 +1,5 @@
 """Application-wide settings loaded from env vars / .env file."""
+
 from __future__ import annotations
 
 from functools import lru_cache

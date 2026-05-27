@@ -5,6 +5,7 @@ Handles streaming and batch ingestion of raw customer/event records.
 Designed for 10M–15M daily records with 99.8%+ reliability via
 checkpointing, retry logic, and dead-letter queuing.
 """
+
 from __future__ import annotations
 
 import time
@@ -25,6 +26,7 @@ from pyspark.sql.types import (
 
 from src.logger import get_logger
 from src.settings import get_settings
+
 from .spark_session import get_spark
 
 logger = get_logger(__name__)
@@ -109,9 +111,7 @@ class DataIngestionPipeline:
         """Read JSON (newline-delimited) with schema enforcement."""
         logger.info("ingesting_json", path=path)
         return self._read_with_stats(
-            self.spark.read.schema(CUSTOMER_EVENT_SCHEMA)
-            .option("multiline", "false")
-            .json(path),
+            self.spark.read.schema(CUSTOMER_EVENT_SCHEMA).option("multiline", "false").json(path),
             source=path,
         )
 
@@ -180,11 +180,7 @@ class DataIngestionPipeline:
         from pyspark.sql.window import Window
 
         w = Window.partitionBy("event_id").orderBy(F.col("timestamp").desc())
-        return (
-            df.withColumn("_rank", F.rank().over(w))
-            .filter(F.col("_rank") == 1)
-            .drop("_rank")
-        )
+        return df.withColumn("_rank", F.rank().over(w)).filter(F.col("_rank") == 1).drop("_rank")
 
     def _add_partition_columns(self, df: DataFrame) -> DataFrame:
         """Ensure date partition column is derived from timestamp."""

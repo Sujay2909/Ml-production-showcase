@@ -4,6 +4,7 @@ Prometheus metrics collection for model and pipeline monitoring.
 Exposes model accuracy, prediction latency, cache hit rate,
 and data drift signals — mirrors the Tableau dashboard KPIs.
 """
+
 from __future__ import annotations
 
 import time
@@ -124,9 +125,7 @@ class MetricsCollector:
     def update_roc_auc(self, model_name: str, roc_auc: float) -> None:
         self.model_roc_auc.labels(model_name=model_name).set(roc_auc)
 
-    def update_pipeline_stats(
-        self, pipeline_name: str, records: int, reliability: float
-    ) -> None:
+    def update_pipeline_stats(self, pipeline_name: str, records: int, reliability: float) -> None:
         self.pipeline_records_processed.labels(pipeline_name=pipeline_name).inc(records)
         self.pipeline_reliability.labels(pipeline_name=pipeline_name).set(reliability)
 
@@ -136,12 +135,10 @@ class MetricsCollector:
     def record_cache_miss(self, model_name: str) -> None:
         self.cache_misses.labels(model_name=model_name).inc()
 
-    def update_drift_score(
-        self, model_name: str, feature_name: str, psi_score: float
-    ) -> None:
-        self.feature_drift_score.labels(
-            model_name=model_name, feature_name=feature_name
-        ).set(psi_score)
+    def update_drift_score(self, model_name: str, feature_name: str, psi_score: float) -> None:
+        self.feature_drift_score.labels(model_name=model_name, feature_name=feature_name).set(
+            psi_score
+        )
         if psi_score > 0.2:
             logger.warning(
                 "significant_feature_drift",

@@ -1,4 +1,5 @@
 """Singleton SparkSession factory with Delta Lake support."""
+
 from __future__ import annotations
 
 from pyspark.sql import SparkSession

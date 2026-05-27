@@ -7,6 +7,7 @@ Handles:
 - Model artefact serialisation (joblib + MLflow model registry)
 - Accuracy improvement targets: 20–30% vs baseline
 """
+
 from __future__ import annotations
 
 import time
@@ -15,9 +16,9 @@ from typing import Dict, List, Optional, Tuple
 
 import joblib
 import mlflow
+import mlflow.lightgbm
 import mlflow.sklearn
 import mlflow.xgboost
-import mlflow.lightgbm
 import numpy as np
 import pandas as pd
 from sklearn.metrics import (
@@ -31,6 +32,7 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score
 
 from src.logger import get_logger
 from src.settings import get_settings
+
 from .models import ModelRegistry
 
 logger = get_logger(__name__)

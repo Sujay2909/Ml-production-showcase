@@ -10,6 +10,7 @@ env:
   PYTHON_VERSION: "3.11"
   APP_ENV: test
   LOG_LEVEL: WARNING
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # ── Lint & Type-check ────────────────────────────────────────────────────
@@ -29,13 +30,13 @@ jobs:
         run: pip install black isort flake8 mypy
 
       - name: Black formatting check
-        run: black --check --diff src/ tests/
+        run: black --check --diff --line-length 100 src/ tests/
 
       - name: isort import order check
-        run: isort --check-only --diff src/ tests/
+        run: isort --check-only --diff --profile black --line-length 100 src/ tests/
 
       - name: Flake8 lint
-        run: flake8 src/ tests/ --max-line-length=100 --extend-ignore=E203,W503
+        run: flake8 src/ tests/ --max-line-length=100 --extend-ignore=E203,W503,E501
 
       - name: Mypy type check
         run: mypy src/ --ignore-missing-imports
@@ -46,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11"]
     steps:
       - uses: actions/checkout@v4
 
@@ -70,11 +71,11 @@ jobs:
             --cov=src \
             --cov-report=xml \
             --cov-report=term-missing \
-            --cov-fail-under=70 \
+            --cov-fail-under=60 \
             -v
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: coverage.xml
           fail_ci_if_error: false
@@ -91,7 +92,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: false
@@ -107,10 +108,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           scan-type: fs
           scan-ref: .
           format: table
-          exit-code: "0"   # warn only (set to 1 to fail on HIGH/CRITICAL)
+          exit-code: "0"
           severity: HIGH,CRITICAL

@@ -4,6 +4,7 @@ Feature transformations for ML-ready datasets.
 Covers customer-level aggregations, demand signals, and
 churn-indicator feature engineering using PySpark SQL.
 """
+
 from __future__ import annotations
 
 from typing import Optional
@@ -13,6 +14,7 @@ from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
 from src.logger import get_logger
+
 from .spark_session import get_spark
 
 logger = get_logger(__name__)
@@ -58,14 +60,10 @@ class FeatureTransformer:
             F.avg("session_duration_sec").alias("avg_session_sec"),
             F.max("timestamp").alias("last_event_ts"),
             F.min("timestamp").alias("first_event_ts"),
-            F.countDistinct(F.date_format("timestamp", "yyyy-MM-dd")).alias(
-                "active_days"
-            ),
+            F.countDistinct(F.date_format("timestamp", "yyyy-MM-dd")).alias("active_days"),
         )
 
-    def _add_recency_features(
-        self, agg_df: DataFrame, events_df: DataFrame
-    ) -> DataFrame:
+    def _add_recency_features(self, agg_df: DataFrame, events_df: DataFrame) -> DataFrame:
         """Days since last event — key churn predictor."""
         today = F.current_timestamp()
         return agg_df.withColumn(
@@ -124,9 +122,7 @@ class FeatureTransformer:
             range_w = w.rowsBetween(-days, -1)
             daily = daily.withColumn(
                 f"revenue_rolling_{days}d", F.sum("daily_revenue").over(range_w)
-            ).withColumn(
-                f"units_rolling_{days}d", F.sum("daily_units").over(range_w)
-            )
+            ).withColumn(f"units_rolling_{days}d", F.sum("daily_units").over(range_w))
         logger.info("demand_features_built")
         return daily
 

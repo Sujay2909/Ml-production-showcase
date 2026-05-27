@@ -1,4 +1,5 @@
 """Unit tests for the FastAPI serving layer and Redis cache."""
+
 from __future__ import annotations
 
 from typing import Any, Dict
@@ -7,9 +8,8 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from src.serving.cache import RedisCache
 from src.serving.api import create_app
-
+from src.serving.cache import RedisCache
 
 # ---------------------------------------------------------------------------
 # RedisCache (uses fakeredis for isolation)
@@ -39,8 +39,8 @@ class TestRedisCache:
 
     def test_hit_rate_tracks_correctly(self, fake_cache):
         fake_cache.set("k1", {"x": 1})
-        fake_cache.get("k1")   # hit
-        fake_cache.get("k2")   # miss
+        fake_cache.get("k1")  # hit
+        fake_cache.get("k2")  # miss
         assert fake_cache.hit_rate == 0.5
 
     def test_delete(self, fake_cache):

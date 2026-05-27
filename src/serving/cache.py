@@ -5,6 +5,7 @@ Reduces retrieval latency by 35%+ by caching prediction results
 keyed on a hash of the input payload.  Supports TTL expiry, cache
 invalidation, and graceful degradation on Redis failures.
 """
+
 from __future__ import annotations
 
 import hashlib

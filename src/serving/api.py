@@ -10,6 +10,7 @@ POST /extract/entities    – NLP entity extraction
 GET  /health              – liveness probe
 GET  /metrics             – cache + model stats
 """
+
 from __future__ import annotations
 
 import os
@@ -24,6 +25,7 @@ from pydantic import BaseModel, Field
 
 from src.logger import get_logger
 from src.settings import get_settings
+
 from .cache import RedisCache
 
 logger = get_logger(__name__)
@@ -169,12 +171,11 @@ def create_app(
             )
 
         import pandas as pd
+
         df = pd.DataFrame([payload.model_dump(exclude={"customer_id"})])
         result = model_churn.predict(df)
         churn_prob = (
-            result.get("churn_probability", [None])[0]
-            if "churn_probability" in result
-            else None
+            result.get("churn_probability", [None])[0] if "churn_probability" in result else None
         )
         prediction = result["predictions"][0]
 

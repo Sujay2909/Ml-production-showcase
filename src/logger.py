@@ -1,4 +1,5 @@
 """Structured JSON logging used across all modules."""
+
 from __future__ import annotations
 
 import logging

@@ -5,6 +5,7 @@ Wraps pandas DataFrames with a consistent fit/transform interface
 so the same preprocessor can be logged to MLflow and reloaded at
 serving time.
 """
+
 from __future__ import annotations
 
 import joblib
@@ -128,33 +129,21 @@ class FeatureEngineer:
         )
         return self.demand_pipeline
 
-    def fit_transform(
-        self, df: pd.DataFrame, task: str = "churn"
-    ) -> np.ndarray:
-        pipeline = (
-            self.churn_pipeline
-            if task == "churn"
-            else self.demand_pipeline
-        )
+    def fit_transform(self, df: pd.DataFrame, task: str = "churn") -> np.ndarray:
+        pipeline = self.churn_pipeline if task == "churn" else self.demand_pipeline
         if pipeline is None:
             raise RuntimeError(f"Pipeline for '{task}' not built. Call build_*_pipeline() first.")
         logger.info("fitting_feature_pipeline", task=task, rows=len(df))
         return pipeline.fit_transform(df)
 
     def transform(self, df: pd.DataFrame, task: str = "churn") -> np.ndarray:
-        pipeline = (
-            self.churn_pipeline
-            if task == "churn"
-            else self.demand_pipeline
-        )
+        pipeline = self.churn_pipeline if task == "churn" else self.demand_pipeline
         if pipeline is None:
             raise RuntimeError(f"Pipeline for '{task}' not built.")
         return pipeline.transform(df)
 
     def save(self, path: str) -> None:
-        joblib.dump(
-            {"churn": self.churn_pipeline, "demand": self.demand_pipeline}, path
-        )
+        joblib.dump({"churn": self.churn_pipeline, "demand": self.demand_pipeline}, path)
         logger.info("feature_pipelines_saved", path=path)
 
     @classmethod

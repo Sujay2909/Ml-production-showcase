@@ -1,4 +1,5 @@
 """Unit tests for ML pipeline: feature engineering, models, training."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -6,13 +7,12 @@ import pandas as pd
 import pytest
 
 from src.ml_pipeline.features import (
+    CHURN_FEATURES,
     ColumnSelector,
     FeatureEngineer,
     OutlierClipper,
-    CHURN_FEATURES,
 )
 from src.ml_pipeline.models import ModelRegistry
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
