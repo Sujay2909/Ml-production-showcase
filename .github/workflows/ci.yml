@@ -60,12 +60,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install fakeredis fastapi httpx pytest pytest-cov joblib scikit-learn \
-            xgboost lightgbm numpy pandas pydantic "pydantic-settings>=2.0" \
-            structlog spacy redis
+          pip install "spacy>=3.6" fakeredis fastapi httpx pytest pytest-cov joblib \
+            scikit-learn xgboost lightgbm numpy pandas pydantic \
+            "pydantic-settings>=2.0" structlog redis
 
-      - name: Download spaCy model
-        run: python -m spacy download en_core_web_sm
+      # spaCy model NOT downloaded — tests use spacy.blank("en") (no model needed)
 
       - name: Run tests with coverage
         run: |
